@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BigDataSpark.iml" filepath="$PROJECT_DIR$/.idea/modules/BigDataSpark.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BigDataSpark-build.iml" filepath="$PROJECT_DIR$/.idea/modules/BigDataSpark-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bigdataspark.iml" filepath="$PROJECT_DIR$/.idea/modules/bigdataspark.iml" />
+    </modules>
+  </component>
+</project>
