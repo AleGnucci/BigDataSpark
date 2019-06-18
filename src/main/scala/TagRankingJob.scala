@@ -58,7 +58,7 @@ class TagRankingJob {
   * Parses the two dates and uses them to calculate the difference between days, returning it as the number of days.
   */
   private def getTrendingTimeDays(trendingDateString: String, publishTimeString: String): Long = {
-    val publishTime = new SimpleDateFormat("yyyyy-MM-ddTHH:mm:ss.SSSz").parse(publishTimeString)
+    val publishTime = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss.SSSz").parse(publishTimeString)
     val trendingDate = new SimpleDateFormat("yy.dd.MM").parse(trendingDateString)
     dateDaysDifference(publishTime, trendingDate)
   }
