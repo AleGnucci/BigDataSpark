@@ -46,7 +46,7 @@ class TagRankingJob {
     val sortedRdd = rddTagsWithTrendingTimeAverage.sortBy(_.getAs[Long](2), ascending = false)
 
     //saving the result in a file
-    sortedRdd coalesce 1 saveAsTextFile "hdfs:/user/agnucci/outputSpark/result.txt"
+    sortedRdd coalesce 1 saveAsTextFile "hdfs:/user/agnucci/outputSpark"
   }
 
   /**

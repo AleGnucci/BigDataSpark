@@ -4,7 +4,7 @@
 		module="bigdataspark$sources"
 		revision="0.1"
 		status="integration"
-		publication="20190618102215"
+		publication="20190618102845"
 	/>
 	<configurations>
 		<conf name="compile" visibility="public" description=""/>
