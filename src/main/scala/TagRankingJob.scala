@@ -17,7 +17,7 @@ class TagRankingJob {
     /*source dataset with the following fields:
     video_id,trending_date,title,channel_title,category_id,publish_time,tags,views,likes,dislikes,comment_count,
     thumbnail_link,comments_disabled,ratings_disabled,video_error_or_removed,description*/
-    val rddVideos = spark.read.parquet("/user/agnucci/datasets/youtubeDataset.parquet").rdd
+    val rddVideos = spark.read.parquet("hdfs:/user/agnucci/datasets/youtubeDataset.parquet").rdd
 
     //filtering out videos with errors, using the video_error_or_removed field
     val rddVideosNoError = rddVideos.filter(_.get(14) == "False")
@@ -46,7 +46,7 @@ class TagRankingJob {
     val sortedRdd = rddTagsWithTrendingTimeAverage.sortBy(_.getAs[Long](2), ascending = false)
 
     //saving the result in a file
-    sortedRdd coalesce 1 saveAsTextFile "/user/agnucci/outputSpark/result"
+    sortedRdd coalesce 1 saveAsTextFile "hdfs:/user/agnucci/outputSpark/result.txt"
   }
 
   /**
