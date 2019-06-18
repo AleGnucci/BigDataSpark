@@ -4,7 +4,7 @@
 		module="bigdataspark-build"
 		revision="0.1.0-SNAPSHOT"
 		status="integration"
-		publication="20190617160524"
+		publication="20190617175342"
 		e:sbtVersion="1.0" e:scalaVersion="2.12"
 	>
 		<description>

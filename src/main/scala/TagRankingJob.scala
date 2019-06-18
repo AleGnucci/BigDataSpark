@@ -45,8 +45,8 @@ class TagRankingJob {
     //sorting the results by meanTrendingTime
     val sortedRdd = rddTagsWithTrendingTimeAverage.sortBy(_.getAs[Long](2), ascending = false)
 
-    //displaying the first 100 rows of the result
-    sortedRdd take 100 foreach(println(_))
+    //saving the result in a file
+    sortedRdd coalesce 1 saveAsTextFile "/user/agnucci/outputSpark/result"
   }
 
   /**
