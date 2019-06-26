@@ -20,7 +20,7 @@ class TagRankingJob {
     val rddVideos = spark.read.parquet("hdfs:/user/agnucci/datasets/youtubeDataset").rdd
 
     //filtering out videos with errors, using the video_error_or_removed field
-    val rddVideosNoError = rddVideos.filter(_.get(14) == "False")
+    val rddVideosNoError = rddVideos.filter(_.get(14) == "False") //TODO: arrayIndexOutOfBOunds durante la get
 
     //removing useless fields and calculating trending time for each row
     //fields in this rdd: tags, trendingTime
@@ -43,7 +43,7 @@ class TagRankingJob {
       .map(row => Row.fromTuple((row.get(0), row.getAs[Long](1)/row.getAs[Long](2), row.get(2))))
 
     //sorting the results by meanTrendingTime
-    val sortedRdd = rddTagsWithTrendingTimeAverage.sortBy(_.getAs[Long](2), ascending = false) //TODO: arrayIndexOutOfBOunds
+    val sortedRdd = rddTagsWithTrendingTimeAverage.sortBy(_.getAs[Long](2), ascending = false)
 
     //saving the result in a file
     sortedRdd coalesce 1 saveAsTextFile "hdfs:/user/agnucci/outputSpark"
@@ -90,6 +90,5 @@ class TagRankingJob {
     * */
   def createAggregatedTuple(accumulator: (Any, Long, Long), rowInGroup: Row): (Any, Long, Long) =
     (accumulator._1, accumulator._2 + rowInGroup.getAs[Long](1), accumulator._3 + rowInGroup.getAs[Long](2))
-
 
 }
