@@ -17,7 +17,7 @@ class TagRankingJob {
     /*source dataset with the following fields:
     video_id,trending_date,title,channel_title,category_id,publish_time,tags,views,likes,dislikes,comment_count,
     thumbnail_link,comments_disabled,ratings_disabled,video_error_or_removed,description*/
-    val rddVideos = spark.read.parquet("hdfs:/user/agnucci/datasets/youtubeDataset.parquet").rdd
+    val rddVideos = spark.read.parquet("hdfs:/user/agnucci/datasets/youtubeDataset").rdd
 
     //filtering out videos with errors, using the video_error_or_removed field
     val rddVideosNoError = rddVideos.filter(_.get(14) == "False")
@@ -43,7 +43,7 @@ class TagRankingJob {
       .map(row => Row.fromTuple((row.get(0), row.getAs[Long](1)/row.getAs[Long](2), row.get(2))))
 
     //sorting the results by meanTrendingTime
-    val sortedRdd = rddTagsWithTrendingTimeAverage.sortBy(_.getAs[Long](2), ascending = false)
+    val sortedRdd = rddTagsWithTrendingTimeAverage.sortBy(_.getAs[Long](2), ascending = false) //TODO: arrayIndexOutOfBOunds
 
     //saving the result in a file
     sortedRdd coalesce 1 saveAsTextFile "hdfs:/user/agnucci/outputSpark"
@@ -52,12 +52,12 @@ class TagRankingJob {
   /**
     * Removes useless fields, keeping only the "tags" field.
     * */
-  private def keepOnlyTagsField(fields: Seq[Any]): Seq[Any] = Seq(fields(6))
+  def keepOnlyTagsField(fields: Seq[Any]): Seq[Any] = Seq(fields(6))
 
   /**
-  * Parses the two dates and uses them to calculate the difference between days, returning it as the number of days.
-  */
-  private def getTrendingTimeDays(trendingDateString: String, publishTimeString: String): Long = {
+    * Parses the two dates and uses them to calculate the difference between days, returning it as the number of days.
+    */
+  def getTrendingTimeDays(trendingDateString: String, publishTimeString: String): Long = {
     val publishTime = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss.SSSz").parse(publishTimeString)
     val trendingDate = new SimpleDateFormat("yy.dd.MM").parse(trendingDateString)
     dateDaysDifference(publishTime, trendingDate)
@@ -66,28 +66,29 @@ class TagRankingJob {
   /**
     * Calculates the difference between days, returning it as the number of days.
     * */
-  private def dateDaysDifference(beforeDate: Date, afterDate: Date): Long =
+  def dateDaysDifference(beforeDate: Date, afterDate: Date): Long =
     TimeUnit.DAYS.convert(Math.abs(afterDate.getTime - beforeDate.getTime), TimeUnit.MILLISECONDS)
 
   /**
     * Updates the provided row with the given tag and adds a column with the value 1.
     * */
-  private def createRowWithSingleTag(row: Row, tag: String): Row =
+  def createRowWithSingleTag(row: Row, tag: String): Row =
     Row fromSeq row.toSeq.updated(0, tag) :+ 1
 
   /**
     * Aggregates the rows in the same group.
     * */
-  private def createAggregatedRow(rowGroup: (Any, Iterable[Row])): Row = {
-    val resultTuple = (rowGroup._1, rowGroup._2.aggregate((rowGroup._1, 0, 0)
-      ((accumulator: (Any, Long, Long), rowInGroup: Row) => createAggregatedTuple(accumulator, rowInGroup))))
-    Row.fromTuple(resultTuple)
+  def createAggregatedRow(rowGroup: (Any, Iterable[Row])): Row = {
+    val initialAccumulator: (Any, Long, Long) = (rowGroup._1, 0, 0)
+    val aggregationLogic = (accumulator: (Any, Long, Long), rowInGroup: Row) => createAggregatedTuple(accumulator, rowInGroup)
+    val aggregatedRows = rowGroup._2.foldLeft(initialAccumulator)(aggregationLogic)
+    Row.fromTuple((rowGroup._1, aggregatedRows))
   }
 
   /**
     * Accumulates the values (trending time and videos count) from the provided row into the provided accumulator
     * */
-  private def createAggregatedTuple(accumulator: (Any, Long, Long), rowInGroup: Row): (Any, Long, Long) =
+  def createAggregatedTuple(accumulator: (Any, Long, Long), rowInGroup: Row): (Any, Long, Long) =
     (accumulator._1, accumulator._2 + rowInGroup.getAs[Long](1), accumulator._3 + rowInGroup.getAs[Long](2))
 
 
