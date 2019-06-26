@@ -17,7 +17,7 @@ class TagRankingJob {
     /*source dataset with the following fields:
     video_id,trending_date,title,channel_title,category_id,publish_time,tags,views,likes,dislikes,comment_count,
     thumbnail_link,comments_disabled,ratings_disabled,video_error_or_removed,description*/
-    val rddVideos = spark.read.parquet("hdfs:/user/agnucci/datasets/youtubeDataset").rdd
+    val rddVideos = spark.read.parquet("hdfs:/user/agnucci/datasets/youtubeDataset//NOMEFILE.parquet").rdd
 
     //filtering out videos with errors, using the video_error_or_removed field
     val rddVideosNoError = rddVideos.filter(_.get(14) == "False") //TODO: arrayIndexOutOfBOunds durante la get
