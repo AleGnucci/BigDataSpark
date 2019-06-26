@@ -82,3 +82,7 @@ fabric.properties
 .DS_Store
 .cache
 .classpath
+
+project/build/target/
+project/plugins/target/
+target/
