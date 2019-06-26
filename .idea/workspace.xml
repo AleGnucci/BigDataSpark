@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="16658eda-d29b-4740-9c15-436052c5bcda" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/scala/TagRankingJob.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/TagRankingJob.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -53,8 +54,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/TagRankingJob.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="19" column="100" selection-start-line="19" selection-start-column="100" selection-end-line="19" selection-end-column="100" />
+            <state relative-caret-position="117">
+              <caret line="17" column="112" lean-forward="true" selection-start-line="17" selection-start-column="112" selection-end-line="17" selection-end-column="112" />
               <folding>
                 <element signature="e#0#33#0" expanded="true" />
               </folding>
@@ -232,12 +233,12 @@
       <workItem from="1560852729405" duration="41000" />
       <workItem from="1560867175863" duration="966000" />
       <workItem from="1561536631647" duration="1804000" />
-      <workItem from="1561557803013" duration="2293000" />
+      <workItem from="1561557803013" duration="3595000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="21168000" />
+    <option name="totallyTimeSpent" value="22470000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -297,8 +298,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/TagRankingJob.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" column="100" selection-start-line="19" selection-start-column="100" selection-end-line="19" selection-end-column="100" />
+        <state relative-caret-position="117">
+          <caret line="17" column="112" lean-forward="true" selection-start-line="17" selection-start-column="112" selection-end-line="17" selection-end-column="112" />
           <folding>
             <element signature="e#0#33#0" expanded="true" />
           </folding>
