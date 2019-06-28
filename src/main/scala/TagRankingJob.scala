@@ -4,12 +4,11 @@ import java.util.concurrent.TimeUnit
 
 import org.apache.spark.sql.{Row, SparkSession}
 
-class TagRankingJob {
+object TagRankingJob {
 
   private val spark = SparkSession
     .builder()
-    .appName("Spark SQL basic example")
-    .config("spark.some.config.option", "some-value")
+    .appName("Tag Ranking Job")
     .getOrCreate()
 
   def main(args: Array[String]): Unit = {
@@ -20,7 +19,7 @@ class TagRankingJob {
     val rddVideos = spark.read.parquet("hdfs:/user/agnucci/datasets/youtubeDataset").rdd
 
     //filtering out videos with errors, using the video_error_or_removed field
-    val rddVideosNoError = rddVideos.filter(_.get(14) == "False") //TODO: arrayIndexOutOfBOunds durante la get
+    val rddVideosNoError = rddVideos.filter(row => row.get(14) == "False" || row.get(14) == "FALSE")
 
     //removing useless fields and calculating trending time for each row
     //fields in this rdd: tags, trendingTime
