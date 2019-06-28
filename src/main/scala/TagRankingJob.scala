@@ -17,7 +17,7 @@ class TagRankingJob {
     /*source dataset with the following fields:
     video_id,trending_date,title,channel_title,category_id,publish_time,tags,views,likes,dislikes,comment_count,
     thumbnail_link,comments_disabled,ratings_disabled,video_error_or_removed,description*/
-    val rddVideos = spark.read.parquet("hdfs:/user/agnucci/datasets/youtubeDataset//NOMEFILE.parquet").rdd
+    val rddVideos = spark.read.parquet("hdfs:/user/agnucci/datasets/youtubeDataset").rdd
 
     //filtering out videos with errors, using the video_error_or_removed field
     val rddVideosNoError = rddVideos.filter(_.get(14) == "False") //TODO: arrayIndexOutOfBOunds durante la get
@@ -58,7 +58,7 @@ class TagRankingJob {
     * Parses the two dates and uses them to calculate the difference between days, returning it as the number of days.
     */
   def getTrendingTimeDays(trendingDateString: String, publishTimeString: String): Long = {
-    val publishTime = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss.SSSz").parse(publishTimeString)
+    val publishTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX").parse(publishTimeString)
     val trendingDate = new SimpleDateFormat("yy.dd.MM").parse(trendingDateString)
     dateDaysDifference(publishTime, trendingDate)
   }
