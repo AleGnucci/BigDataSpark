@@ -27,9 +27,14 @@ object TagRankingJob {
       .map(row => Row.fromSeq(keepOnlyTagsField(row.toSeq) :+
         getTrendingTimeDays(row.getAs[String](1), row.getAs[String](5))))
 
+    //makes every double quotation mark a single quotation mark
+    //fields in this rdd: tags, trendingTime
+    val rddVideosWithCorrectTags = rddVideosWithTrendingTime
+      .map(row => Row.fromSeq(Seq(correctTags(row.getAs[String](0)), row.get(1))))
+
     //creating for each row as many new rows as the amount of tags for that initial row
     //fields in this rdd: tag, trendingTime, videosCount (this last one always has value 1)
-    val rddTags = rddVideosWithTrendingTime
+    val rddTags = rddVideosWithCorrectTags
       .flatMap(row => row.getAs[String](0).split("\\|").map(tag => createRowWithSingleTag(row, tag)))
 
     /*grouping the rows by tag, then aggregating the groups to calculate for each tag the videos count and the sum
@@ -39,15 +44,16 @@ object TagRankingJob {
     //calculating the mean trending time
     //fields in this rdd: tag, meanTrendingTime, videosCount
     val rddTagsWithTrendingTimeAverage = rddTagsWithTrendingTimeSum
-      .map(row => Row.fromTuple((row.get(0), row.getAs[Long](1)/row.getAs[Long](2), row.get(2))))
+      .map(row => Row.fromSeq(Seq(row.get(0), row.getAs[Long](1)/row.getAs[Long](2), row.get(2))))
 
-    //sorting the results by meanTrendingTime
+    //sorting the results by videos count
     val sortedRdd = rddTagsWithTrendingTimeAverage.sortBy(_.getAs[Long](2), ascending = false)
 
-    sortedRdd coalesce 1 take 10 foreach println
+    println("[tag, mean trending time, videos count]:")
+    sortedRdd take 100 foreach println
 
     //saving the result in a file
-    sortedRdd coalesce 1 saveAsTextFile "hdfs:/user/agnucci/outputSpark"
+    //sortedRdd coalesce 1 saveAsTextFile "hdfs:/user/agnucci/outputSpark"
   }
 
   /**
@@ -71,25 +77,31 @@ object TagRankingJob {
     TimeUnit.DAYS.convert(Math.abs(afterDate.getTime - beforeDate.getTime), TimeUnit.MILLISECONDS)
 
   /**
+    * Transforms every double quotation mark in a single quotation mark
+    * */
+  def correctTags(tags: String): String = {
+    tags.replaceAll("|\"\"", "|\"").replaceAll("\"\"|", "\"|")
+  }
+
+  /**
     * Updates the provided row with the given tag and adds a column with the value 1.
     * */
   def createRowWithSingleTag(row: Row, tag: String): Row =
-    Row fromSeq row.toSeq.updated(0, tag) :+ 1
+    Row fromSeq row.toSeq.updated(0, tag) :+ 1L
 
   /**
     * Aggregates the rows in the same group.
     * */
   def createAggregatedRow(rowGroup: (Any, Iterable[Row])): Row = {
     val initialAccumulator: (Any, Long, Long) = (rowGroup._1, 0L, 0L)
-    val aggregationLogic = (accumulator: (Any, Long, Long), rowInGroup: Row) => createAggregatedTuple(accumulator, rowInGroup)
-    val aggregatedRows = rowGroup._2.foldLeft(initialAccumulator)(aggregationLogic)
-    Row.fromTuple((rowGroup._1, aggregatedRows))
+    val aggregatedRows = rowGroup._2.foldLeft(initialAccumulator)(createAggregatedTuple)
+    Row.fromSeq(aggregatedRows.productIterator.toList)
   }
 
   /**
     * Accumulates the values (trending time and videos count) from the provided row into the provided accumulator
     * */
-  def createAggregatedTuple(accumulator: (Any, Long, Long), rowInGroup: Row): (Any, Long, Long) = //TODO: classCastException: java.lang.Long cannot be cast to java.lang.Integer
+  def createAggregatedTuple(accumulator: (Any, Long, Long), rowInGroup: Row): (Any, Long, Long) =
     (accumulator._1, accumulator._2 + rowInGroup.getAs[Long](1), accumulator._3 + rowInGroup.getAs[Long](2))
 
 }
