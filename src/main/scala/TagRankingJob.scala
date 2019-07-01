@@ -30,7 +30,7 @@ object TagRankingJob {
     //creating for each row as many new rows as the amount of tags for that initial row
     //fields in this rdd: tag, trendingTime, videosCount (this last one always has value 1)
     val rddTags = rddVideosWithTrendingTime
-      .flatMap(row => row.getAs[String](0).split("|").map(tag => createRowWithSingleTag(row, tag)))
+      .flatMap(row => row.getAs[String](0).split("\\|").map(tag => createRowWithSingleTag(row, tag)))
 
     /*grouping the rows by tag, then aggregating the groups to calculate for each tag the videos count and the sum
     of trending times (to be later used to calculate the mean trending time)*/
@@ -43,6 +43,8 @@ object TagRankingJob {
 
     //sorting the results by meanTrendingTime
     val sortedRdd = rddTagsWithTrendingTimeAverage.sortBy(_.getAs[Long](2), ascending = false)
+
+    sortedRdd coalesce 1 take 10 foreach println
 
     //saving the result in a file
     sortedRdd coalesce 1 saveAsTextFile "hdfs:/user/agnucci/outputSpark"
@@ -78,7 +80,7 @@ object TagRankingJob {
     * Aggregates the rows in the same group.
     * */
   def createAggregatedRow(rowGroup: (Any, Iterable[Row])): Row = {
-    val initialAccumulator: (Any, Long, Long) = (rowGroup._1, 0, 0)
+    val initialAccumulator: (Any, Long, Long) = (rowGroup._1, 0L, 0L)
     val aggregationLogic = (accumulator: (Any, Long, Long), rowInGroup: Row) => createAggregatedTuple(accumulator, rowInGroup)
     val aggregatedRows = rowGroup._2.foldLeft(initialAccumulator)(aggregationLogic)
     Row.fromTuple((rowGroup._1, aggregatedRows))
@@ -87,7 +89,7 @@ object TagRankingJob {
   /**
     * Accumulates the values (trending time and videos count) from the provided row into the provided accumulator
     * */
-  def createAggregatedTuple(accumulator: (Any, Long, Long), rowInGroup: Row): (Any, Long, Long) =
+  def createAggregatedTuple(accumulator: (Any, Long, Long), rowInGroup: Row): (Any, Long, Long) = //TODO: classCastException: java.lang.Long cannot be cast to java.lang.Integer
     (accumulator._1, accumulator._2 + rowInGroup.getAs[Long](1), accumulator._3 + rowInGroup.getAs[Long](2))
 
 }
