@@ -32,14 +32,25 @@ object EtlJob {
     outputDf.write.parquet("hdfs:/user/agnucci/datasets/youtubeDataset")
   }
 
+  /**
+    * Converts boolean fields to String.
+    * */
   def correctDf(df: DataFrame): DataFrame = {
     df.withColumn("comments_disabled", $"comments_disabled".cast(StringType))
       .withColumn("ratings_disabled", $"ratings_disabled".cast(StringType))
       .withColumn("video_error_or_removed", $"video_error_or_removed".cast(StringType))
   }
 
+  /**
+    * Creates a DataFrame from a path.
+    * */
   def readCsv(path: String): DataFrame = {
-    spark.read.option("header", "true").option("delimiter", ",").option("inferSchema", "true").csv(path)
+    spark.read
+      .option("wholeFile", true).option("multiline",true) //supports multiline fields (fields with \n)
+      .option("mode", "DROPMALFORMED") //ignores badly formed records
+      .option("header", "true").option("delimiter", ",") //specifies csv header presence and delimiter
+      .option("inferSchema", "true")
+      .csv(path)
   }
 
 }
