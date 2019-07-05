@@ -34,7 +34,7 @@ object EtlJob {
     /*
     //code to create a small version of the dataset
     val CAdf = readCsv("hdfs:/user/agnucci/datasets/youtube-new/CAvideos.csv")
-    correctDf(CAdf).write.parquet("hdfs:/user/agnucci/datasets/youtubeDatasetSmall")
+    correctDf(CAdf.limit(1000)).write.parquet("hdfs:/user/agnucci/datasets/youtubeDatasetSmall")
     */
   }
 
