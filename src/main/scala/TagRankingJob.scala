@@ -19,7 +19,7 @@ object TagRankingJob {
     val rddVideos = spark.read.parquet("hdfs:/user/agnucci/datasets/youtubeDataset").rdd
 
     //filtering out videos with errors, using the video_error_or_removed field
-    val rddVideosNoError = rddVideos.filter(row => row.get(14) == "False" || row.get(14) == "FALSE")
+    val rddVideosNoError = rddVideos.filter(row => row.getAs[String](14).toLowerCase == "false")
 
     //removing useless fields and calculating trending time for each row
     //fields in this rdd: tags, trendingTime
