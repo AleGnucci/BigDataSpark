@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.concurrent.TimeUnit
-
+import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.sql.{Row, SparkSession}
 
 object TagRankingJob {
@@ -10,6 +10,7 @@ object TagRankingJob {
     .builder()
     .appName("Tag Ranking Job")
     .getOrCreate()
+  private val sc = spark.sparkContext
 
   def main(args: Array[String]): Unit = {
 
@@ -49,11 +50,19 @@ object TagRankingJob {
     //sorting the results by videos count
     val sortedRdd = rddTagsWithTrendingTimeAverage.sortBy(_.getAs[Long](2), ascending = false)
 
+    /*
     println("[tag, mean trending time, videos count]:")
     sortedRdd take 100 foreach println
+    */
+
+    val fs = FileSystem.get(sc.hadoopConfiguration)
+    val outPutPath = new Path("hdfs:/user/agnucci/outputSpark")
+    if (fs.exists(outPutPath)){
+      fs.delete(outPutPath, true)
+    }
 
     //saving the result in a file
-    //sortedRdd coalesce 1 saveAsTextFile "hdfs:/user/agnucci/outputSpark"
+    sortedRdd coalesce 1 saveAsTextFile "hdfs:/user/agnucci/outputSpark"
   }
 
   /**
@@ -80,7 +89,7 @@ object TagRankingJob {
     * Transforms every double quotation mark in a single quotation mark
     * */
   def correctTags(tags: String): String = {
-    tags.replaceAll("|\"\"", "|\"").replaceAll("\"\"|", "\"|")
+    tags.replaceAll("\\|\"\"", "\\|\"").replaceAll("\"\"\\|", "\"\\|")
   }
 
   /**
