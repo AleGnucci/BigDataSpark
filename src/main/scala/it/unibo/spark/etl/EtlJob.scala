@@ -1,3 +1,5 @@
+package it.unibo.spark.etl
+
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 object EtlJob {
@@ -8,21 +10,22 @@ object EtlJob {
     .appName("Etl Phase")
     .getOrCreate()
 
-  import spark.implicits._
   import org.apache.spark.sql.types.StringType
+  import spark.implicits._
 
   def main(args: Array[String]): Unit = {
 
-    val CAdf = readCsv("hdfs:/user/agnucci/datasets/youtube-new/CAvideos.csv")
-    val DEdf = readCsv("hdfs:/user/agnucci/datasets/youtube-new/DEvideos.csv")
-    val FRdf = readCsv("hdfs:/user/agnucci/datasets/youtube-new/FRvideos.csv")
-    val GBdf = readCsv("hdfs:/user/agnucci/datasets/youtube-new/GBvideos.csv")
-    val INdf = readCsv("hdfs:/user/agnucci/datasets/youtube-new/INvideos.csv")
-    val JPdf = readCsv("hdfs:/user/agnucci/datasets/youtube-new/JPvideos.csv")
-    val KRdf = readCsv("hdfs:/user/agnucci/datasets/youtube-new/KRvideos.csv")
-    val MXdf = readCsv("hdfs:/user/agnucci/datasets/youtube-new/MXvideos.csv")
-    val RUdf = readCsv("hdfs:/user/agnucci/datasets/youtube-new/RUvideos.csv")
-    val USdf = readCsv("hdfs:/user/agnucci/datasets/youtube-new/USvideos.csv")
+    val basePath = "hdfs:/user/agnucci/datasets/youtube-new/"
+    val CAdf = readCsv(basePath + "CAvideos.csv")
+    val DEdf = readCsv(basePath + "DEvideos.csv")
+    val FRdf = readCsv(basePath + "FRvideos.csv")
+    val GBdf = readCsv(basePath + "GBvideos.csv")
+    val INdf = readCsv(basePath + "INvideos.csv")
+    val JPdf = readCsv(basePath + "JPvideos.csv")
+    val KRdf = readCsv(basePath + "KRvideos.csv")
+    val MXdf = readCsv(basePath + "MXvideos.csv")
+    val RUdf = readCsv(basePath + "RUvideos.csv")
+    val USdf = readCsv(basePath + "USvideos.csv")
 
     val bigDf1 = CAdf.union(DEdf.union(FRdf.union(GBdf.union(USdf.union(MXdf.union(RUdf)))))) //files with only string fields
     val bigDf2 = INdf.union(JPdf.union(KRdf)) //files with some string fields and some boolean fields
