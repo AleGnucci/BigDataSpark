@@ -1,7 +1,6 @@
-package it.unibo.spark.job
+package it.unibo.agnucci.spark.job
 
-import it.unibo.spark.job.helpers.HelperMethods._
-import org.apache.hadoop.fs.{FileSystem, Path}
+import it.unibo.agnucci.spark.job.helpers.HelperMethods._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Row, SparkSession}
 
@@ -73,14 +72,11 @@ object TagRankingJob {
     //sorting the results by videos count
     val sortedRdd = rddTagsWithTrendingTimeAverage.sortBy(_.getAs[Long](2), ascending = false)
 
+    //puts output in a single partition
     val resultRdd = sortedRdd coalesce 1
 
     //deletes the output folder if it already exists
-    val fs = FileSystem.get(sc.hadoopConfiguration)
-    val outPutPath = new Path("hdfs:/user/agnucci/outputSpark")
-    if (fs.exists(outPutPath)) {
-      fs.delete(outPutPath, true)
-    }
+    deletePathIfExists(args(1), sc)
 
     //saving the result in a parquet file
     spark.createDataFrame(resultRdd, getOutputParquetSchema).write.parquet(args(1))

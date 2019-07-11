@@ -1,8 +1,12 @@
-package it.unibo.spark.job.helpers
+package it.unibo.agnucci.spark.job.helpers
 
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.concurrent.TimeUnit
+
+import it.unibo.agnucci.spark.job.TagRankingJob.sc
+import org.apache.hadoop.fs.{FileSystem, Path}
+import org.apache.spark.SparkContext
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types.{LongType, StringType, StructField, StructType}
 
@@ -64,6 +68,17 @@ object HelperMethods {
       .add(StructField("tag", StringType, nullable = true))
       .add(StructField("trending_time_avg_days", LongType, nullable = true))
       .add(StructField("videos_count", LongType, nullable = true))
+  }
+
+  /**
+    *
+    * */
+  def deletePathIfExists(path: String, sc: SparkContext): Unit = {
+    val fs = FileSystem.get(sc.hadoopConfiguration)
+    val outputPath = new Path(path)
+    if (fs.exists(outputPath)) {
+      fs.delete(outputPath, true)
+    }
   }
 
 }
