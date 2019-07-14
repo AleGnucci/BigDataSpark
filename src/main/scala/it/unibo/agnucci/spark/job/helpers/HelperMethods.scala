@@ -14,7 +14,7 @@ object HelperMethods {
   /**
     * Removes useless fields, keeping only the "tags" field.
     * */
-  def keepOnlyTagsField(fields: Seq[Any]): Seq[Any] = Seq(fields(6))
+  def keepOnlyTagsField(fields: Seq[Any]): Seq[Any] = Seq(fields(2))
 
   /**
     * Parses the two dates and uses them to calculate the difference between days, returning it as the number of days.

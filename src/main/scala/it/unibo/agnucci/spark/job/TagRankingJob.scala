@@ -27,12 +27,11 @@ object TagRankingJob {
     * */
   private def readDatasetAndFilter(args: Array[String]): RDD[Row]= {
     /*source parquet dataset with the following fields:
-    video_id,trending_date,title,channel_title,category_id,publish_time,tags,views,likes,dislikes,comment_count,
-    thumbnail_link,comments_disabled,ratings_disabled,video_error_or_removed,description*/
+    trending_date, publish_time, tags, video_error_or_removed*/
     val rddVideos = spark.read.parquet(args(0)).rdd
 
     //filtering out videos with errors, using the video_error_or_removed field
-    rddVideos.filter(row => row.getAs[String](14).toLowerCase == "false")
+    rddVideos.filter(row => row.getAs[String](3).toLowerCase == "false")
   }
 
   /**
