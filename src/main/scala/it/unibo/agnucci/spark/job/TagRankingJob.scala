@@ -31,7 +31,7 @@ object TagRankingJob {
     val rddVideos = spark.read.parquet(args(0)).rdd
 
     //filtering out videos with errors, using the video_error_or_removed field
-    rddVideos.filter(row => row.getAs[String](3).toLowerCase == "false")
+    rddVideos.filter(row => !row.getAs[Boolean](3))
   }
 
   /**
@@ -42,7 +42,7 @@ object TagRankingJob {
     //fields in this rdd: tags, trendingTime
     val rddVideosWithTrendingTime = rddVideosNoError
       .map(row => Row.fromSeq(keepOnlyTagsField(row.toSeq) :+
-        getTrendingTimeDays(row.getAs[String](1), row.getAs[String](5))))
+        getTrendingTimeDays(row.getAs[String](1), row.getAs[String](0))))
 
     //makes every double quotation mark a single quotation mark
     //fields in this rdd: tags, trendingTime

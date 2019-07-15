@@ -4,7 +4,6 @@ import java.text.{ParseException, SimpleDateFormat}
 import org.apache.spark.sql.types.BooleanType
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.apache.hadoop.fs.{FileSystem, Path}
-import org.apache.spark.sql.functions.{to_date,unix_timestamp}
 
 object EtlJob {
 
@@ -14,8 +13,6 @@ object EtlJob {
     .appName("Etl Phase")
     .getOrCreate()
   private val sc = spark.sparkContext
-  private val TRENDINGDATEFORMAT = "yy.dd.MM"
-  private val PUBLISHTIMEFORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX"
 
   import spark.implicits._
 
@@ -74,8 +71,8 @@ object EtlJob {
     val trendingDate = row.getAs[String](0)
     val publishTime = row.getAs[String](1)
     try {
-      new SimpleDateFormat(TRENDINGDATEFORMAT).parse(trendingDate)
-      new SimpleDateFormat(PUBLISHTIMEFORMAT).parse(publishTime)
+      new SimpleDateFormat("yy.dd.MM").parse(trendingDate)
+      new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX").parse(publishTime)
     } catch{
       case exception: ParseException => return false
     }

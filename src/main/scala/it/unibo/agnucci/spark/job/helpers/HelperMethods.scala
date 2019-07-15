@@ -19,7 +19,7 @@ object HelperMethods {
   /**
     * Parses the two dates and uses them to calculate the difference between days, returning it as the number of days.
     */
-  def getTrendingTimeDays(trendingDateString: String, publishTimeString: String): Long = {
+  def getTrendingTimeDays(publishTimeString: String, trendingDateString: String): Long = {
     val publishTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX").parse(publishTimeString)
     val trendingDate = new SimpleDateFormat("yy.dd.MM").parse(trendingDateString)
     dateDaysDifference(publishTime, trendingDate)
