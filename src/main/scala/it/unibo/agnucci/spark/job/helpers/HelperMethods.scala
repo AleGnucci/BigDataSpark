@@ -34,9 +34,8 @@ object HelperMethods {
   /**
     * Transforms every double quotation mark in a single quotation mark
     * */
-  def correctTags(tags: String): String = {
-    tags.replaceAll("\\|\"\"", "\\|\"").replaceAll("\"\"\\|", "\"\\|")
-  }
+  def correctTags(tags: String): String =
+    tags.toLowerCase.replaceAll("\\|\"\"", "\\|\"").replaceAll("\"\"\\|", "\"\\|")
 
   /**
     * Updates the provided row with the given tag and adds a column with the value 1.
@@ -62,12 +61,11 @@ object HelperMethods {
   /**
     * Defines the schema of the output parquet file.
     * */
-  def getOutputParquetSchema: StructType = {
+  def getOutputParquetSchema: StructType =
     new StructType()
       .add(StructField("tag", StringType, nullable = true))
       .add(StructField("trending_time_avg_days", LongType, nullable = true))
       .add(StructField("videos_count", LongType, nullable = true))
-  }
 
   /**
     *

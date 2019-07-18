@@ -40,7 +40,7 @@ object TagRankingJob {
   private def getAverageTrendingTimeAndVideosCount(rddVideosNoError: RDD[Row]): RDD[Row] = {
     //removing useless fields and calculating trending time for each row
     //fields in this rdd: tags, trendingTime
-    val rddVideosWithTrendingTime = rddVideosNoError //TODO: qui converti a rdd di coppie k-v
+    val rddVideosWithTrendingTime = rddVideosNoError
       .map(row => Row.fromSeq(keepOnlyTagsField(row.toSeq) :+
         getTrendingTimeDays(row.getAs[String](1), row.getAs[String](0))))
 
@@ -56,7 +56,7 @@ object TagRankingJob {
 
     /*grouping the rows by tag, then aggregating the groups to calculate for each tag the videos count and the sum
     of trending times (to be later used to calculate the mean trending time)*/
-    val rddTagsWithTrendingTimeSum = rddTags.groupBy(row => row.get(0)).map(rowGroup => createAggregatedRow(rowGroup)) //TODO: qui usa aggregateByKey
+    val rddTagsWithTrendingTimeSum = rddTags.groupBy(row => row.get(0)).map(rowGroup => createAggregatedRow(rowGroup))
 
     //calculating the mean trending time
     //fields in this rdd: tag, meanTrendingTime, videosCount
