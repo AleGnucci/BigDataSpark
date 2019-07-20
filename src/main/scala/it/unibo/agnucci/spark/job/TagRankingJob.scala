@@ -39,7 +39,7 @@ object TagRankingJob {
     * */
   private def getAverageTrendingTimeAndVideosCount(rddVideosNoError: RDD[Row]): RDD[(String, (Long, Long))] = {
     //removes useless fields and calculates trending time for each row
-    //also it makes every double quotation mark a single quotation mark in the tags field and converts it to lowercase
+    //also it removes the quotation marks in the tags field and converts it to lowercase
     //finally, it converts rows to pairs, where the key is tags, the value is trendingTime
     val rddVideosWithTrendingTime = rddVideosNoError
       .map(row => (correctTags(row.getAs[String](2)), getTrendingTimeDays(row.getAs[String](1), row.getAs[String](0))))
@@ -47,7 +47,7 @@ object TagRankingJob {
     //creating for each pair as many new pairs as the amount of tags for that initial pair
     //pair rdd: the key is the tag, the value is trendingTime and videosCount (this last one always has value 1)
     val rddTags = rddVideosWithTrendingTime
-      .flatMap(pair => pair._1.split("\\|").distinct.map(tag => (tag, (pair._2, 1L))))
+      .flatMap(pair => pair._1.split("\\|").filter(_ != "").distinct.map(tag => (tag, (pair._2, 1L))))
 
     /*aggregates the groups to calculate for each tag the videos count and the sum
     of trending times (to be later used to calculate the mean trending time)*/
@@ -79,7 +79,7 @@ object TagRankingJob {
 
     //saving the result in a parquet file
     spark.createDataFrame(resultRdd, getOutputParquetSchema).write //TODO: rimuovi \" dai tags
-      .mode(SaveMode.Overwrite).option("header","true").option("quoteAll", "false").csv(args(1))
+      .mode(SaveMode.Overwrite).option("header","true").csv(args(1))
   }
 
 }

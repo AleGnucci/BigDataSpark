@@ -4,8 +4,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-import org.apache.hadoop.fs.{FileSystem, Path}
-import org.apache.spark.SparkContext
 import org.apache.spark.sql.types.{LongType, StringType, StructField, StructType}
 
 object HelperMethods {
@@ -26,10 +24,13 @@ object HelperMethods {
     TimeUnit.DAYS.convert(Math.abs(afterDate.getTime - beforeDate.getTime), TimeUnit.MILLISECONDS)
 
   /**
-    * Transforms every double quotation mark in a single quotation mark
+    * Removes the quotation marks from the tags string. It is the same as this:
+    * tags.toLowerCase.replaceAll("\\|\"\"\"", "\\|").replaceAll("\"\"\"\\|", "\\|")
+    * .replaceAll("\\|\"\"", "\\|").replaceAll("\"\"\\|", "\\|")
+    * .replaceAll("\\|\"", "\\|").replaceAll("\"\\|", "\\|")
     * */
   def correctTags(tags: String): String =
-    tags.toLowerCase.replaceAll("\\|\"\"", "\\|\"").replaceAll("\"\"\\|", "\"\\|")
+    tags.toLowerCase.replaceAll("[\\|\"\"|\"\"\\||\\|\"|\"\\||\\|\"\"\"|\"\"\"\\|]", "\\|")
 
   /**
     * Defines the schema of the output parquet file.
