@@ -2,7 +2,7 @@ package it.unibo.agnucci.spark.job
 
 import it.unibo.agnucci.spark.job.helpers.HelperMethods._
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{Row, SparkSession}
+import org.apache.spark.sql.{Row, SaveMode, SparkSession}
 
 object TagRankingJob {
 
@@ -19,7 +19,7 @@ object TagRankingJob {
 
     val rddTagsWithTrendingTimeAverage= getAverageTrendingTimeAndVideosCount(rddVideosNoError)
 
-    sortAndSaveToParquet(rddTagsWithTrendingTimeAverage, args)
+    sortAndSaveToCsv(rddTagsWithTrendingTimeAverage, args)
   }
 
   /**
@@ -65,7 +65,7 @@ object TagRankingJob {
   /**
     * Sorts the rdd by videos count, then saves the result in a parquet file.
     * */
-  private def sortAndSaveToParquet(notSortedRdd: RDD[(String, (Long, Long))], args: Array[String]): Unit = {
+  private def sortAndSaveToCsv(notSortedRdd: RDD[(String, (Long, Long))], args: Array[String]): Unit = {
     //sorting the results by videos count
     //sortBy shuffles the data and sets a RangePartitioner
     val sortedRdd = notSortedRdd.sortBy(_._2._2, ascending = false)
@@ -77,11 +77,9 @@ object TagRankingJob {
     //puts output in a single partition
     val resultRdd = rowRdd coalesce 1
 
-    //deletes the output folder if it already exists
-    deletePathIfExists(args(1), sc)
-
     //saving the result in a parquet file
-    spark.createDataFrame(resultRdd, getOutputParquetSchema).write.parquet(args(1))
+    spark.createDataFrame(resultRdd, getOutputParquetSchema).write //TODO: rimuovi \" dai tags
+      .mode(SaveMode.Overwrite).option("header","true").option("quoteAll", "false").csv(args(1))
   }
 
 }
