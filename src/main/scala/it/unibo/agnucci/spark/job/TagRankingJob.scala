@@ -47,7 +47,7 @@ object TagRankingJob {
     //creating for each pair as many new pairs as the amount of tags for that initial pair
     //pair rdd: the key is the tag, the value is trendingTime and videosCount (this last one always has value 1)
     val rddTags = rddVideosWithTrendingTime
-      .flatMap(pair => pair._1.split("\\|").filter(_ != "").distinct.map(tag => (tag, (pair._2, 1L))))
+      .flatMap(pair => pair._1.split("\\|").distinct.map(tag => (tag, (pair._2, 1L))))
 
     /*aggregates the groups to calculate for each tag the videos count and the sum
     of trending times (to be later used to calculate the mean trending time)*/
@@ -78,7 +78,7 @@ object TagRankingJob {
     val resultRdd = rowRdd coalesce 1
 
     //saving the result in a parquet file
-    spark.createDataFrame(resultRdd, getOutputParquetSchema).write //TODO: rimuovi \" dai tags
+    spark.createDataFrame(resultRdd, getOutputParquetSchema).write
       .mode(SaveMode.Overwrite).option("header","true").csv(args(1))
   }
 
