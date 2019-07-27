@@ -33,9 +33,9 @@ object HelperMethods {
     tags.toLowerCase.replaceAll("[\\|\"\"|\"\"\\||\\|\"|\"\\||\\|\"\"\"|\"\"\"\\|]", "\\|")
 
   /**
-    * Defines the schema of the output parquet file.
+    * Defines the schema of the output file.
     * */
-  def getOutputParquetSchema: StructType =
+  def getOutputSchema: StructType =
     new StructType()
       .add(StructField("tag", StringType, nullable = true))
       .add(StructField("trending_time_avg_days", LongType, nullable = true))

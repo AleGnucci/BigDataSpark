@@ -78,7 +78,7 @@ object TagRankingJob {
     val resultRdd = rowRdd coalesce 1
 
     //saving the result in a csv file
-    spark.createDataFrame(resultRdd, getOutputParquetSchema).write
+    spark.createDataFrame(resultRdd, getOutputSchema).write
       .mode(SaveMode.Overwrite).option("header","true").csv(args(1))
   }
 
