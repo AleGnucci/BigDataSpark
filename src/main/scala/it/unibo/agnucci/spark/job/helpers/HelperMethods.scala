@@ -8,12 +8,15 @@ import org.apache.spark.sql.types.{LongType, StringType, StructField, StructType
 
 object HelperMethods {
 
+  private[this] final val publishTimeDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+  private[this] final val trendingDateFormat = new SimpleDateFormat("yy.dd.MM")
+
   /**
     * Parses the two dates and uses them to calculate the difference between days, returning it as the number of days.
     */
   def getTrendingTimeDays(publishTimeString: String, trendingDateString: String): Long = {
-    val publishTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX").parse(publishTimeString)
-    val trendingDate = new SimpleDateFormat("yy.dd.MM").parse(trendingDateString)
+    val publishTime = publishTimeDateFormat.parse(publishTimeString)
+    val trendingDate = trendingDateFormat.parse(trendingDateString)
     dateDaysDifference(publishTime, trendingDate)
   }
 
